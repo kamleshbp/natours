@@ -1,5 +1,5 @@
 const express = require("express");
-const tourController = require("./../controllers/tourController");
+const tourController = require("../controllers/tourController");
 
 const router = express.Router();
 
@@ -8,12 +8,12 @@ router.use((req, res, next) => {
   next();
 });
 
-router.param("id", tourController.checkId);
+// router.param("id", tourController.checkId);
 
 router
   .route("/")
   .get(tourController.getAllTours)
-  .post(tourController.checkBody, tourController.createTour);
+  .post(tourController.createTour);
 router
   .route("/:id")
   .get(tourController.getTour)
