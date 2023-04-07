@@ -13,7 +13,6 @@
 //   next();
 // };
 
-const { query } = require("express");
 const Tour = require("../models/tourModel");
 
 exports.getAllTours = async (req, res) => {
@@ -39,6 +38,11 @@ exports.getAllTours = async (req, res) => {
     } else {
       query = query.select("-__v");
     }
+
+    const page = +req.query.page || 1;
+    const limit = +req.query.limit || 100;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
 
     const tours = await query;
 
