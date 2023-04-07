@@ -11,6 +11,9 @@ router.use((req, res, next) => {
 // router.param("id", tourController.checkId);
 
 router
+  .route("/top-5-best-cheap")
+  .get(tourController.top5BestCheap, tourController.getAllTours);
+router
   .route("/")
   .get(tourController.getAllTours)
   .post(tourController.createTour);
@@ -19,5 +22,4 @@ router
   .get(tourController.getTour)
   .patch(tourController.updateTour)
   .delete(tourController.deleteTour);
-
 module.exports = router;
