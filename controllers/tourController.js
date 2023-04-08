@@ -14,6 +14,7 @@
 // };
 
 const Tour = require("../models/tourModel");
+const APIFeatures = require("../utils/apiFeatures");
 
 exports.top5BestCheap = (req, res, next) => {
   req.query.limit = "5";
@@ -23,34 +24,15 @@ exports.top5BestCheap = (req, res, next) => {
 
 exports.getAllTours = async (req, res) => {
   try {
-    const queryObj = { ...req.query };
-    const excludedFields = ["page", "sort", "limit", "fields"];
-    excludedFields.forEach((ele) => delete queryObj[ele]);
+    const query = Tour.find();
 
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, (match) => `$${match}`);
-    let query = Tour.find(JSON.parse(queryStr));
+    const features = new APIFeatures(req.query, query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
 
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(",").join(" ");
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort("-createdAt");
-    }
-
-    if (req.query.fields) {
-      const fields = req.query.fields.split(",").join(" ");
-      query = query.select(fields);
-    } else {
-      query = query.select("-__v");
-    }
-
-    const page = +req.query.page || 1;
-    const limit = +req.query.limit || 100;
-    const skip = (page - 1) * limit;
-    query = query.skip(skip).limit(limit);
-
-    const tours = await query;
+    const tours = await features.query;
 
     res.status(200).json({
       status: "success",
